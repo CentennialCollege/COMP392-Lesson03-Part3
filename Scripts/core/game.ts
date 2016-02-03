@@ -14,6 +14,7 @@ import PlaneGeometry = THREE.PlaneGeometry;
 import SphereGeometry = THREE.SphereGeometry;
 import Geometry = THREE.Geometry;
 import AxisHelper = THREE.AxisHelper;
+import CameraHelper = THREE.CameraHelper;
 import LambertMaterial = THREE.MeshLambertMaterial;
 import MeshBasicMaterial = THREE.MeshBasicMaterial;
 import Material = THREE.Material;
@@ -37,6 +38,7 @@ var scene: Scene;
 var renderer: Renderer;
 var camera: Camera;
 var axes: AxisHelper;
+var spotLightHelper: CameraHelper;
 var cube: Mesh;
 var plane: Mesh;
 var sphere: Mesh;
@@ -77,7 +79,7 @@ function init() {
     axes = new AxisHelper(20);
     scene.add(axes);
     console.log("Added Axis Helper to scene...");
-    
+     
     //Add a Plane to the Scene
     planeGeometry = new THREE.PlaneGeometry(60, 20, 1, 1);
     planeMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff });
@@ -130,6 +132,9 @@ function init() {
     scene.add(spotLight1);
     console.log("Added Spot Light 1 to Scene");
     
+    // add the camera helper object to show debug information
+    spotLightHelper = new CameraHelper(spotLight1.shadow.camera);
+    
     // Add a small sphere simulating the pointLight
     sphereLight = new SphereGeometry(0.2);
     sphereLightMaterial = new MeshBasicMaterial({ color: 0xac6c25 });
@@ -174,7 +179,7 @@ function addControl(controlObject: Control): void {
     });
 
     gui.add(controlObject, 'angle', 0, Math.PI * 2).onChange((angle) => {
-        spotLight1.intensity = angle;
+        spotLight1.angle = angle;
     });
 
     gui.add(controlObject, 'intensity', 0, 5).onChange((intensity) => {
@@ -187,6 +192,14 @@ function addControl(controlObject: Control): void {
 
     gui.add(controlObject, 'exponent', 0, 100).onChange((exponent) => {
         spotLight1.exponent = exponent;
+    });
+
+    gui.add(controlObject, 'debug').onChange((flag) => {
+        if (flag) {
+            scene.add(spotLightHelper);
+        } else {
+            scene.remove(spotLightHelper);
+        }
     });
 
     gui.add(controlObject, 'castShadow').onChange((flag) => {

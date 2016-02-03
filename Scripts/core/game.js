@@ -12,6 +12,7 @@ var PlaneGeometry = THREE.PlaneGeometry;
 var SphereGeometry = THREE.SphereGeometry;
 var Geometry = THREE.Geometry;
 var AxisHelper = THREE.AxisHelper;
+var CameraHelper = THREE.CameraHelper;
 var LambertMaterial = THREE.MeshLambertMaterial;
 var MeshBasicMaterial = THREE.MeshBasicMaterial;
 var Material = THREE.Material;
@@ -33,6 +34,7 @@ var scene;
 var renderer;
 var camera;
 var axes;
+var spotLightHelper;
 var cube;
 var plane;
 var sphere;
@@ -113,6 +115,8 @@ function init() {
     spotLight1.distance = 0;
     scene.add(spotLight1);
     console.log("Added Spot Light 1 to Scene");
+    // add the camera helper object to show debug information
+    spotLightHelper = new CameraHelper(spotLight1.shadow.camera);
     // Add a small sphere simulating the pointLight
     sphereLight = new SphereGeometry(0.2);
     sphereLightMaterial = new MeshBasicMaterial({ color: 0xac6c25 });
@@ -148,7 +152,7 @@ function addControl(controlObject) {
         spotLight1.color = new Color(color);
     });
     gui.add(controlObject, 'angle', 0, Math.PI * 2).onChange(function (angle) {
-        spotLight1.intensity = angle;
+        spotLight1.angle = angle;
     });
     gui.add(controlObject, 'intensity', 0, 5).onChange(function (intensity) {
         spotLight1.intensity = intensity;
@@ -158,6 +162,14 @@ function addControl(controlObject) {
     });
     gui.add(controlObject, 'exponent', 0, 100).onChange(function (exponent) {
         spotLight1.exponent = exponent;
+    });
+    gui.add(controlObject, 'debug').onChange(function (flag) {
+        if (flag) {
+            scene.add(spotLightHelper);
+        }
+        else {
+            scene.remove(spotLightHelper);
+        }
     });
     gui.add(controlObject, 'castShadow').onChange(function (flag) {
         spotLight1.castShadow = flag;
